@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Restroom Finder</title>
+
+    <!-- Bootstrap -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link href="/assets/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/custom1.css" rel="stylesheet">
+      
+    <script>
+      function initMap() {
+        var myLatLng = {lat: {{lat}}, lng: {{long}} };
+        var LatLng1 = {lat: -24.363, lng: 132.044};
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: myLatLng
+        });
+        
+        var image = {
+        	url: 'assets/search1.png',
+			// This marker is 20 pixels wide by 32 pixels high.
+			size: new google.maps.Size(32, 32),
+			// The origin for this image is (0, 0).
+			//origin: new google.maps.Point(0, 0),
+        };
+        
+        var point = new google.maps.Marker({
+        	position: myLatLng,
+        	map: map,
+        	title: '{{address}}',
+        	icon: image
+        });
+        
+		{% for wc in wc_list %}			
+			var marker{{ wc['id'] }} = new google.maps.Marker({
+				position: {lat: {{ wc['latitude'] }}, lng: {{ wc['longitude'] }} },
+				map: map,
+				title: '{{ wc['name'] }}'
+        	});
+        	
+        	var contentString = '<div id="content">'+
+		      '<div id="siteNotice">'+
+		      '</div>'+
+			      '<h1 id="firstHeading" class="firstHeading">{{ wc['name'] }}</h1>'+
+			      '<div id="bodyContent">'+
+			      '<p><strong>Distance:</strong> {{ wc['distance'] }} mi<br>' +
+			      '<strong>Accessible:</strong> {{ wc['accessible'] }} <br>'+
+			      '<strong>Street:</strong> {{ wc['street'] }}, ' + '{{ wc['city'] }}<br>' +
+			      '<strong>Directions:</strong> {{ wc['directions'] }} <br>'+
+		      '</div>'+
+		      '</div>';
+	
+			var infowindow{{ wc['id'] }} = new google.maps.InfoWindow({
+			    content: contentString
+			});
+			marker{{ wc['id'] }}.addListener('click', function() {
+			    infowindow{{ wc['id'] }}.open(map, marker{{ wc['id'] }});
+			});
+		
+		{% endfor %}
+		
+      }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDbJF4BInkwqVxOd2RvRimoG3i7amTywGg&signed_in=true&callback=initMap"></script>
+    
+  </head>
+  <body>
+  	<div class="container-fluid">
+	    <h1 id="title">Restroom Finder Result</h1>
+	    <div id="info">
+	    	<p>We found {{ wc_num }} restrooms close to this address: {{address}}</p>
+	    	<p><strong>Accessible:</strong> {{ada}}</p>
+	    </div>
+	    
+	    <div id="get-home">
+	    	<a class="btn btn-default" href="http://anhhuahcde310final.appspot.com/" role="button"><span class="glyphicon glyphicon-home"></span> Get Home</a>
+	    </div>
+	</div>
+    
+    <div id="map"></div>
+  </body>
+</html>
